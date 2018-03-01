@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class View: MonoBehaviour {
     private GameManager gameManager;
@@ -13,14 +14,21 @@ public class View: MonoBehaviour {
     public GameObject[] roundMarkers;
     public GameObject playerColorBoard;
     public Sprite[] colorBoards;
-    
-    
+    public Text logText;
+
     void Start()
     {
         gameManager = this.GetComponent<GameManager>();
+        gameManager.PhaseChanged += PhaseHandling;
+
     }
 
- 
+    void Update()
+    {
+        
+    }
+
+
     public void UpdateNames()
     {
         for (int i = 0; i < gameManager.players.Length; i++)
@@ -75,6 +83,16 @@ public class View: MonoBehaviour {
                 playerColorBoard.GetComponent<Image>().sprite = colorBoards[3];
                 break;
         }
+    }
+
+    public void PhaseHandling(Phase phase)
+    {
+        PrintTextToLog("Current Phase: " + phase);
+    }
+
+    public void PrintTextToLog(string text)
+    {
+        logText.text = text;
     }
 
 }

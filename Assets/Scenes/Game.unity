@@ -2062,6 +2062,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 7e35481c6963d774987391a65bb49ce9, type: 3}
   - {fileID: 21300000, guid: 234029ca3db00a74bb8838b70c599eb6, type: 3}
   - {fileID: 21300000, guid: 32b42f4beb1082f43abf5e541b8ec2d3, type: 3}
+  logText: {fileID: 1843422362}
 --- !u!114 &1920924384
 MonoBehaviour:
   m_ObjectHideFlags: 0
