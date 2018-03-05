@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using System;
 
 public class View: MonoBehaviour {
-    private GameManager gameManager;
+    public GameManager gameManager;
     private Player selectedPlayer;
 
 
@@ -15,11 +15,11 @@ public class View: MonoBehaviour {
     public GameObject playerColorBoard;
     public Sprite[] colorBoards;
     public Text logText;
+    public GameObject groupingPopup;
 
     void Start()
     {
-        gameManager = this.GetComponent<GameManager>();
-        gameManager.PhaseChanged += PhaseHandling;
+        gameManager.PhaseChanged += OnPhaseChanged;
 
     }
 
@@ -85,14 +85,43 @@ public class View: MonoBehaviour {
         }
     }
 
-    public void PhaseHandling(Phase phase)
+    public void OnPhaseChanged(Phase phase)
     {
-        PrintTextToLog("Current Phase: " + phase);
+        StartCoroutine(SkippingAnimation(phase));
     }
 
     public void PrintTextToLog(string text)
     {
         logText.text = text;
+    }
+
+    private IEnumerator SkippingAnimation(Phase phase)
+    {        
+        switch (phase)
+        {
+            case Phase.SETUP_VIEW_RECEIVE_GOLD:
+                PrintTextToLog("Giving gold to players");
+                yield return new WaitForSeconds(3);
+                gameManager.EndPhase();
+                break;
+            case Phase.SETUP_VIEW_REVEALING_INFO:
+                PrintTextToLog("Revealing new information");
+                yield return new WaitForSeconds(3);
+                gameManager.EndPhase();
+                break;
+            case Phase.SETUP_ADDING_NEW_STUFF:
+                PrintTextToLog("Adding new stuff");
+                yield return new WaitForSeconds(3);
+                gameManager.EndPhase();
+                break;
+            case Phase.VIEW_GROUPING_PLAYER:
+                PrintTextToLog("Player " + gameManager.currentPlayer + " grouping imps");
+                groupingPopup.SetActive(true);
+                //waiting for input
+                gameManager.EndPhase();
+                break;
+          
+        }  
     }
 
 }

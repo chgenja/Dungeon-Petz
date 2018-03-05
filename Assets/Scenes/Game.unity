@@ -2040,6 +2040,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6bc74060469ec042b446f948834ab4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameManager: {fileID: 1920924384}
   playerNames:
   - {fileID: 359146147}
   - {fileID: 382726443}
