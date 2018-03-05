@@ -42,26 +42,6 @@ public class GameManager : MonoBehaviour
         round = 1;
         view.UpdateRound();
 
-        //player order for grouping phase
-        int index = 0;
-        for (int i = 0; i < players.Length; i++)
-        {
-            if (players[i].isStartingPlayer)
-            {
-                index = i;
-                break;
-            }
-        }
-        Debug.Log(index);
-        for (int i = 0; i < players.Length; i++)
-        {
-            if (index + i == players.Length)
-            {
-                index = -i;
-            }
-            playerOrder.Add(players[index + i]);
-        }
-
 
         PhaseChanged += OnPhaseChanged;
 
@@ -72,7 +52,7 @@ public class GameManager : MonoBehaviour
     public void EndPhase()
     {        
         currentPhase += 1;
-        OnPhaseChanged(currentPhase);
+        PhaseChanged(currentPhase);
     }
 
 
@@ -89,15 +69,87 @@ public class GameManager : MonoBehaviour
             case Phase.SETUP_ADDING_NEW_STUFF:
                 OnAddingNewStuff();
                 break;
+            case Phase.SETUP_GROUPING_PLAYER:
+                OrganizeDefaultPlayerOrder();
+                EndPhase();
+                break;
             case Phase.GROUPING_PLAYER:
-                //giving turn to 1st player
+                //giving turn to a player
                 if (playerOrder.Count != 0)
-                {
+                {                
                     currentPlayer = playerOrder[0];
                     playerOrder.Remove(currentPlayer);
                     OnGroupingPlayer(currentPlayer);
                 }
                 break;
+            case Phase.CHECK_GROUPING_PLAYERS:
+                {
+                    OnCheckGroupingPlayers();
+                    break;
+                }
+            case Phase.SETUP_SHOPPING_ACTIONS:
+                {
+                    //creating list of actions, now using only starting player
+                    for (int i = 0; i < players.Length; i++)
+                    {
+                        if (players[i].isStartingPlayer)
+                        {
+                            currentPlayer = players[i];
+                            break;
+                        }
+                    }
+                    EndPhase();
+                    break;
+                }
+            case Phase.SHOPPING_ACTION:
+                {
+                    OnShoppingAction(currentPlayer);
+                    break;
+                }
+            case Phase.CHECK_SHOPPING_ACTIONS:
+                {
+                    OnCheckShoppingActions();
+                    break;
+                }
+            case Phase.SETUP_ARRANGING_PETS:
+                OrganizeDefaultPlayerOrder();
+                EndPhase();
+                break;
+            case Phase.ARRANGING_PETS:
+                //giving turn to a player
+                if (playerOrder.Count != 0)
+                {
+                    currentPlayer = playerOrder[0];
+                    playerOrder.Remove(currentPlayer);
+                    OnArrangingPets(currentPlayer);
+                }
+                break;
+            case Phase.CHECK_ARRANGING_PETS:
+                {
+                    OnCheckArrangingPets();
+                    break;
+                }
+        }
+    }
+
+    private void OrganizeDefaultPlayerOrder()
+    {
+        int index = 0;
+        for (int i = 0; i < players.Length; i++)
+        {
+            if (players[i].isStartingPlayer)
+            {
+                index = i;
+                break;
+            }
+        }
+        for (int i = 0; i < players.Length; i++)
+        {
+            if (index + i == players.Length)
+            {
+                index = -i;
+            }
+            playerOrder.Add(players[index + i]);
         }
     }
 
@@ -124,8 +176,8 @@ public class GameManager : MonoBehaviour
         //adding new stuff
 
         //animation of adding new stuff
-        currentPhase = Phase.SETUP_ADDING_NEW_STUFF;
-        PhaseChanged(Phase.SETUP_ADDING_NEW_STUFF);
+        currentPhase = Phase.SETUP_VIEW_ADDING_NEW_STUFF;
+        PhaseChanged(Phase.SETUP_VIEW_ADDING_NEW_STUFF);
     }
 
     private void OnGroupingPlayer(Player player)
@@ -133,5 +185,49 @@ public class GameManager : MonoBehaviour
         //informing view about popup
         currentPhase = Phase.VIEW_GROUPING_PLAYER;
         PhaseChanged(Phase.VIEW_GROUPING_PLAYER);
+    }
+
+    private void OnCheckGroupingPlayers()
+    {
+        if (playerOrder.Count != 0)
+        {
+            currentPhase = Phase.GROUPING_PLAYER;
+            PhaseChanged(Phase.GROUPING_PLAYER);
+        }
+        else
+        {
+            EndPhase();
+        }
+    }    
+
+    private void OnShoppingAction(Player player)
+    {
+        currentPhase = Phase.VIEW_SHOPPING_ACTION;
+        PhaseChanged(Phase.VIEW_SHOPPING_ACTION);
+    }
+
+    private void OnCheckShoppingActions()
+    {
+        EndPhase();
+    }
+
+    private void OnArrangingPets(Player player)
+    {
+        //informing view about popup
+        currentPhase = Phase.VIEW_ARRANGING_PETS;
+        PhaseChanged(Phase.VIEW_ARRANGING_PETS);
+    }
+
+    private void OnCheckArrangingPets()
+    {
+        if (playerOrder.Count != 0)
+        {
+            currentPhase = Phase.ARRANGING_PETS;
+            PhaseChanged(Phase.ARRANGING_PETS);
+        }
+        else
+        {
+            EndPhase();
+        }
     }
 }

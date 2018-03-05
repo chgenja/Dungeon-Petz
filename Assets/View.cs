@@ -87,7 +87,65 @@ public class View: MonoBehaviour {
 
     public void OnPhaseChanged(Phase phase)
     {
-        StartCoroutine(SkippingAnimation(phase));
+        switch (phase) {
+            case Phase.SETUP_VIEW_RECEIVE_GOLD:
+                {
+                    StartCoroutine(SkippingAnimation(phase));
+                    break;
+                }
+            case Phase.SETUP_VIEW_REVEALING_INFO:
+                {
+                    StartCoroutine(SkippingAnimation(phase));
+                    break;
+                }
+            case Phase.SETUP_VIEW_ADDING_NEW_STUFF:
+                {
+                    StartCoroutine(SkippingAnimation(phase));
+                    break;
+                }
+            case Phase.VIEW_GROUPING_PLAYER:
+                {
+                    PrintTextToLog("Player " + gameManager.currentPlayer.GetName() + " grouping imps");
+                    groupingPopup.SetActive(true);
+                    gameManager.EndPhase();
+                    break;
+                }
+            case Phase.EVERYONE_GROUPED:
+                {
+                    PrintTextToLog("All players grouped imps");
+                    groupingPopup.SetActive(false);
+                    gameManager.EndPhase();
+                    break;
+                }
+            case Phase.VIEW_SHOPPING_ACTION:
+                {
+                    PrintTextToLog("Player " + gameManager.currentPlayer.GetName() + " shopping action");                    
+                    groupingPopup.SetActive(true);
+                    gameManager.EndPhase();
+                    break;
+                }
+            case Phase.EVERYONE_SHOPPED:
+                {
+                    PrintTextToLog("All players shopped");
+                    groupingPopup.SetActive(false);
+                    gameManager.EndPhase();
+                    break;
+                }
+            case Phase.VIEW_ARRANGING_PETS:
+                {
+                    PrintTextToLog("Player " + gameManager.currentPlayer.GetName() + " arranging pets");
+                    groupingPopup.SetActive(true);
+                    gameManager.EndPhase();
+                    break;
+                }
+            case Phase.EVERYONE_ARRANGED:
+                {
+                    PrintTextToLog("All players arranged pets");
+                    groupingPopup.SetActive(false);
+                    gameManager.EndPhase();
+                    break;
+                }
+        } 
     }
 
     public void PrintTextToLog(string text)
@@ -109,18 +167,11 @@ public class View: MonoBehaviour {
                 yield return new WaitForSeconds(3);
                 gameManager.EndPhase();
                 break;
-            case Phase.SETUP_ADDING_NEW_STUFF:
+            case Phase.SETUP_VIEW_ADDING_NEW_STUFF:
                 PrintTextToLog("Adding new stuff");
                 yield return new WaitForSeconds(3);
                 gameManager.EndPhase();
                 break;
-            case Phase.VIEW_GROUPING_PLAYER:
-                PrintTextToLog("Player " + gameManager.currentPlayer + " grouping imps");
-                groupingPopup.SetActive(true);
-                //waiting for input
-                gameManager.EndPhase();
-                break;
-          
         }  
     }
 

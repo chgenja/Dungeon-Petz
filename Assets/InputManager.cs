@@ -4,23 +4,11 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour {
     public GameManager gameManager;
-
-    void Start()
+    public View view;
+    
+    public void MovingForward()
     {
-        gameManager.PhaseChanged += OnPhaseChanged;
-
+        gameManager.EndPhase();
     }
 
-    void OnPhaseChanged(Phase phase)
-    {
-        switch (phase)
-        {
-            case Phase.INPUT_GROUPING_PLAYER:
-                {
-                    //receiving input
-                    break;
-                }
-        }
-
-    }
 }
