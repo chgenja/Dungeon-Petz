@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour {
     public GameManager gameManager;
-    public View view;
     
     public void MovingForward()
     {

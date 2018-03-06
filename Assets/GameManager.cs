@@ -16,6 +16,9 @@ public class GameManager : MonoBehaviour
     public Player currentPlayer;
 
     public event Action<Phase> PhaseChanged = (x) => { };
+    public event Action RoundChanged = () => { };
+    public event Action StartingPlayerChanged = () => { };
+    public event Action<Player> CurrentPlayerChanged = (x) => { };
 
     private List<Player> playerOrder = new List<Player>();
 
@@ -78,6 +81,7 @@ public class GameManager : MonoBehaviour
                 if (playerOrder.Count != 0)
                 {                
                     currentPlayer = playerOrder[0];
+                    CurrentPlayerChanged(currentPlayer);
                     playerOrder.Remove(currentPlayer);
                     OnGroupingPlayer(currentPlayer);
                 }
@@ -95,6 +99,7 @@ public class GameManager : MonoBehaviour
                         if (players[i].isStartingPlayer)
                         {
                             currentPlayer = players[i];
+                            CurrentPlayerChanged(currentPlayer);
                             break;
                         }
                     }
@@ -104,6 +109,11 @@ public class GameManager : MonoBehaviour
             case Phase.SHOPPING_ACTION:
                 {
                     OnShoppingAction(currentPlayer);
+                    break;
+                }
+            case Phase.EVALUATE_SHOPPING_ACTION:
+                {
+                    OnEvaluateShoppingAction();
                     break;
                 }
             case Phase.CHECK_SHOPPING_ACTIONS:
@@ -120,15 +130,141 @@ public class GameManager : MonoBehaviour
                 if (playerOrder.Count != 0)
                 {
                     currentPlayer = playerOrder[0];
+                    CurrentPlayerChanged(currentPlayer);
                     playerOrder.Remove(currentPlayer);
                     OnArrangingPets(currentPlayer);
                 }
                 break;
+            case Phase.EVALUATE_ARRANGING_PETS:
+                {
+                    OnEvaluateArrangingPets();
+                    break;
+                }
             case Phase.CHECK_ARRANGING_PETS:
                 {
                     OnCheckArrangingPets();
                     break;
                 }
+            case Phase.SETUP_NEED_CARDS:
+                {
+                    OrganizeDefaultPlayerOrder();
+                    EndPhase();
+                    break;
+                }
+            case Phase.NEED_CARDS_DEALT:
+                {
+                    if (playerOrder.Count != 0)
+                    {
+                        currentPlayer = playerOrder[0];
+                        CurrentPlayerChanged(currentPlayer);
+                        playerOrder.Remove(currentPlayer);
+                        OnNeedCardsDealt();
+                    }
+                    break;
+                }
+            case Phase.EVALUATE_NEED_CARDS:
+                {
+                    OnEvaluateNeedCards();
+                    break;
+                }
+            case Phase.CHECK_NEED_CARDS:
+                {
+                    OnCheckNeedCards();
+                    break;
+                }
+            case Phase.SETUP_EXHIBITION:
+                {
+                    OrganizeDefaultPlayerOrder();
+                    EndPhase();
+                    break;
+                }
+            case Phase.EXHIBITION:
+                {
+                    if (playerOrder.Count != 0)
+                    {
+                        currentPlayer = playerOrder[0];
+                        CurrentPlayerChanged(currentPlayer);
+                        playerOrder.Remove(currentPlayer);
+                        OnExhibition();
+                    }
+                    break;
+                }
+            case Phase.EVALUATE_EXHIBITION:
+                {
+                    OnEvaluateExhibition();
+                    break;
+                }
+            case Phase.CHECK_EXHIBITION:
+                {
+                    OnCheckExhibition();
+                    break;
+                }
+            case Phase.SETUP_BUSINESS:
+                {
+                    OrganizeDefaultPlayerOrder();
+                    EndPhase();
+                    break;
+                }
+            case Phase.BUSINESS:
+                {
+                    if (playerOrder.Count != 0)
+                    {
+                        currentPlayer = playerOrder[0];
+                        CurrentPlayerChanged(currentPlayer);
+                        playerOrder.Remove(currentPlayer);
+                        OnBusiness();
+                    }
+                    break;
+                }
+            case Phase.EVALUATE_BUSINESS:
+                {
+                    OnEvaluateBusiness();
+                    break;
+                }
+            case Phase.CHECK_BUSINESS:
+                {
+                    OnCheckBusiness();
+                    break;
+                }
+            case Phase.SETUP_USING_IMPS:
+                {
+                    OrganizeDefaultPlayerOrder();
+                    EndPhase();
+                    break;
+                }
+            case Phase.USING_IMPS:
+                {
+                    if (playerOrder.Count != 0)
+                    {
+                        currentPlayer = playerOrder[0];
+                        CurrentPlayerChanged(currentPlayer);
+                        playerOrder.Remove(currentPlayer);
+                        OnUsingImps();
+                    }
+                    break;
+                }
+            case Phase.EVALUATE_USING_IMPS:
+                {
+                    OnEvaluateUsingImps();
+                    break;
+                }
+            case Phase.CHECK_USING_IMPS:
+                {
+                    OnCheckUsingImps();
+                    break;
+                }
+            case Phase.AGING:
+                OnAging();
+                break;
+            case Phase.STARTING_NEXT_ROUND:
+                OnStartingNextRound();
+                break;
+            case Phase.START_AGAIN:
+                OnStartAgain();
+                break;
+            case Phase.GAME_END:
+                OnGameEnd();
+                break;
         }
     }
 
@@ -206,6 +342,12 @@ public class GameManager : MonoBehaviour
         PhaseChanged(Phase.VIEW_SHOPPING_ACTION);
     }
 
+    private void OnEvaluateShoppingAction()
+    {
+        currentPhase = Phase.VIEW_EVALUATE_SHOPPING_ACTION;
+        PhaseChanged(Phase.VIEW_EVALUATE_SHOPPING_ACTION);
+
+    }
     private void OnCheckShoppingActions()
     {
         EndPhase();
@@ -216,6 +358,12 @@ public class GameManager : MonoBehaviour
         //informing view about popup
         currentPhase = Phase.VIEW_ARRANGING_PETS;
         PhaseChanged(Phase.VIEW_ARRANGING_PETS);
+    }
+
+    private void OnEvaluateArrangingPets()
+    {
+        currentPhase = Phase.VIEW_EVALUATE_ARRANGING_PETS;
+        PhaseChanged(Phase.VIEW_EVALUATE_ARRANGING_PETS);
     }
 
     private void OnCheckArrangingPets()
@@ -229,5 +377,162 @@ public class GameManager : MonoBehaviour
         {
             EndPhase();
         }
+    }
+
+    private void OnNeedCardsDealt()
+    {
+        currentPhase = Phase.VIEW_NEED_CARDS_DEALT;
+        PhaseChanged(Phase.VIEW_NEED_CARDS_DEALT);
+    }
+
+    private void OnEvaluateNeedCards()
+    {
+        currentPhase = Phase.VIEW_EVALUATE_NEED_CARDS;
+        PhaseChanged(Phase.VIEW_EVALUATE_NEED_CARDS);
+    }
+
+    private void OnCheckNeedCards()
+    {
+        if (playerOrder.Count != 0)
+        {
+            currentPhase = Phase.NEED_CARDS_DEALT;
+            PhaseChanged(Phase.NEED_CARDS_DEALT);
+        }
+        else
+        {
+            EndPhase();
+        }
+    }
+
+    private void OnExhibition()
+    {
+        currentPhase = Phase.VIEW_EXHIBITION;
+        PhaseChanged(Phase.VIEW_EXHIBITION);
+    }
+
+    private void OnEvaluateExhibition()
+    {
+        currentPhase = Phase.VIEW_EVALUATE_EXHIBITION;
+        PhaseChanged(Phase.VIEW_EVALUATE_EXHIBITION);
+    }
+
+    private void OnCheckExhibition()
+    {
+        if (playerOrder.Count != 0)
+        {
+            currentPhase = Phase.EXHIBITION;
+            PhaseChanged(Phase.EXHIBITION);
+        }
+        else
+        {
+            EndPhase();
+        }
+    }
+
+    private void OnBusiness()
+    {
+        currentPhase = Phase.VIEW_BUSINESS;
+        PhaseChanged(Phase.VIEW_BUSINESS);
+    }
+
+    private void OnEvaluateBusiness()
+    {
+        currentPhase = Phase.VIEW_EVALUATE_BUSINESS;
+        PhaseChanged(Phase.VIEW_EVALUATE_BUSINESS);
+    }
+
+    private void OnCheckBusiness()
+    {
+        if (playerOrder.Count != 0)
+        {
+            currentPhase = Phase.BUSINESS;
+            PhaseChanged(Phase.BUSINESS);
+        }
+        else
+        {
+            EndPhase();
+        }
+    }
+
+    private void OnUsingImps()
+    {
+        currentPhase = Phase.VIEW_USING_IMPS;
+        PhaseChanged(Phase.VIEW_USING_IMPS);
+    }
+
+    private void OnEvaluateUsingImps()
+    {
+        currentPhase = Phase.VIEW_EVALUATE_USING_IMPS;
+        PhaseChanged(Phase.VIEW_EVALUATE_USING_IMPS);
+    }
+
+    private void OnCheckUsingImps()
+    {
+        if (playerOrder.Count != 0)
+        {
+            currentPhase = Phase.USING_IMPS;
+            PhaseChanged(Phase.USING_IMPS);
+        }
+        else
+        {
+            EndPhase();
+        }
+    }
+
+    private void OnAging()
+    {
+
+        //animation of aging
+        currentPhase = Phase.VIEW_AGING;
+        PhaseChanged(Phase.VIEW_AGING);
+    }
+
+    private void OnStartingNextRound()
+    {
+        round++;
+        if (round > 5)
+        {
+            currentPhase = Phase.GAME_END;
+            PhaseChanged(Phase.GAME_END);
+            return;
+        }
+        RoundChanged();
+
+        for (int i = 0; i < players.Length; i++)
+        {
+            if (players[i].isStartingPlayer)
+            {
+                players[i].isStartingPlayer = false;
+                if (i == players.Length-1)
+                {
+                    players[0].isStartingPlayer = true;
+                    CurrentPlayerChanged(players[0]);
+                    break;
+                } else
+                {
+                    players[i + 1].isStartingPlayer = true;
+                    CurrentPlayerChanged(players[i+1]);
+                    break;
+                }            
+            }
+        }
+        StartingPlayerChanged();        
+
+        //animation of next round
+        currentPhase = Phase.VIEW_STARTING_NEXT_ROUND;
+        PhaseChanged(Phase.VIEW_STARTING_NEXT_ROUND);
+    }
+
+    private void OnStartAgain()
+    {
+        currentPhase = Phase.SETUP;
+        PhaseChanged(Phase.SETUP);
+    }
+
+    private void OnGameEnd()
+    {
+        currentPhase = Phase.VIEW_GAME_END;
+        PhaseChanged(Phase.VIEW_GAME_END);
+
     }
 }
