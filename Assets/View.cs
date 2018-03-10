@@ -10,8 +10,10 @@ public class View: MonoBehaviour {
 
 
     public Text[] playerNames;
-    public GameObject[] startingPlayerMarkers;
-    public GameObject[] roundMarkers;
+    public GameObject startingPlayerMarker;
+    public GameObject[] startingPlayerMarkerPositions;
+    public GameObject roundMarker;
+    public GameObject[] roundMarkerPositions;
     public GameObject playerColorBoard;
     public Sprite[] colorBoards;
     public Text logText;
@@ -38,31 +40,57 @@ public class View: MonoBehaviour {
 
     public void UpdateStartingPlayerMarker()
     {
-        for (int i = 0; i < gameManager.players.Length; i++)
+        if (gameManager.round == 1)
         {
-            if (gameManager.players[i].isStartingPlayer)
+            for (int i = 0; i < gameManager.players.Length; i++)
             {
-                startingPlayerMarkers[i].SetActive(true);
-            } else
+                if (gameManager.players[i].isStartingPlayer)
+                {
+                    startingPlayerMarker.transform.position = startingPlayerMarkerPositions[i].transform.position;
+                    startingPlayerMarker.SetActive(true);
+                }
+            }
+        } else
+        {
+            //finding index of current starting player
+            int index = 0;
+            for (int i = 0; i < gameManager.players.Length; i++)
             {
-                startingPlayerMarkers[i].SetActive(false);
-            }          
+                if (gameManager.players[i].isStartingPlayer)
+                {
+                    index = i;
+                    break;
+                }
+            }
+            StartCoroutine(MovingMarker(startingPlayerMarker, startingPlayerMarkerPositions[index].transform.position, 1));
         }
     }
 
     public void UpdateRound()
     {
-        for (int i = 0; i < roundMarkers.Length; i++)
+        if (gameManager.round == 1)
         {
-            if (gameManager.round-1 == i)
-            {
-                roundMarkers[i].SetActive(true);
-            } else
-            {
-                roundMarkers[i].SetActive(false);
-            }
+            roundMarker.transform.position = roundMarkerPositions[0].transform.position;
+            roundMarker.SetActive(true);
+        } else
+        {
+            StartCoroutine(MovingMarker(roundMarker,roundMarkerPositions[gameManager.round - 1].transform.position,1));
         }
         
+    }
+
+    private IEnumerator MovingMarker(GameObject gameObject, Vector3 newPosition, float seconds)
+    {
+        float elapsedTime = 0f;
+        Vector3 startingPos = gameObject.transform.position;
+        while (elapsedTime < seconds)
+        {
+            gameObject.transform.position = Vector3.Lerp(startingPos, newPosition, (elapsedTime / seconds));
+            elapsedTime += Time.deltaTime;
+            yield return new WaitForEndOfFrame();            
+        }
+        gameObject.transform.position = newPosition;
+        yield return new WaitForSeconds(seconds);
     }
 
     public void UpdatePlayerColorBoard(Player player)
@@ -253,64 +281,64 @@ public class View: MonoBehaviour {
         {
             case Phase.SETUP_VIEW_RECEIVE_GOLD:
                 PrintTextToLog("Giving gold to players");
-                yield return new WaitForSeconds(0);
+                yield return new WaitForSeconds(1);
                 gameManager.EndPhase();
                 break;
             case Phase.SETUP_VIEW_REVEALING_INFO:
                 PrintTextToLog("Revealing new information");
-                yield return new WaitForSeconds(0);
+                yield return new WaitForSeconds(1);
                 gameManager.EndPhase();
                 break;
             case Phase.SETUP_VIEW_ADDING_NEW_STUFF:
                 PrintTextToLog("Adding new stuff");
-                yield return new WaitForSeconds(0);
+                yield return new WaitForSeconds(1);
                 gameManager.EndPhase();
                 break;
             case Phase.VIEW_EVALUATE_SHOPPING_ACTION:
                 groupingPopup.SetActive(false);
                 PrintTextToLog("Player " + gameManager.currentPlayer.GetName() + " making an action");
-                yield return new WaitForSeconds(0);
+                yield return new WaitForSeconds(1);
                 gameManager.EndPhase();
                 break;
             case Phase.VIEW_EVALUATE_ARRANGING_PETS:
                 groupingPopup.SetActive(false);
                 PrintTextToLog("Player " + gameManager.currentPlayer.GetName() + " arranged pets");
-                yield return new WaitForSeconds(0);
+                yield return new WaitForSeconds(1);
                 gameManager.EndPhase();
                 break;
             case Phase.VIEW_EVALUATE_NEED_CARDS:
                 groupingPopup.SetActive(false);
                 PrintTextToLog("Player " + gameManager.currentPlayer.GetName() + " evaluating needs");
-                yield return new WaitForSeconds(0);
+                yield return new WaitForSeconds(1);
                 gameManager.EndPhase();
                 break;
             case Phase.VIEW_EVALUATE_EXHIBITION:
                 groupingPopup.SetActive(false);
                 PrintTextToLog("Player " + gameManager.currentPlayer.GetName() + " evaluating exhibition");
-                yield return new WaitForSeconds(0);
+                yield return new WaitForSeconds(1);
                 gameManager.EndPhase();
                 break;
             case Phase.VIEW_EVALUATE_BUSINESS:
                 groupingPopup.SetActive(false);
                 PrintTextToLog("Player " + gameManager.currentPlayer.GetName() + " evaluating business");
-                yield return new WaitForSeconds(0);
+                yield return new WaitForSeconds(1);
                 gameManager.EndPhase();
                 break;
             case Phase.VIEW_EVALUATE_USING_IMPS:
                 groupingPopup.SetActive(false);
                 PrintTextToLog("Player " + gameManager.currentPlayer.GetName() + " evaluating unused imps");
-                yield return new WaitForSeconds(0);
+                yield return new WaitForSeconds(1);
                 gameManager.EndPhase();
                 break;
             case Phase.VIEW_AGING:
                 groupingPopup.SetActive(false);
                 PrintTextToLog("Aging pets");
-                yield return new WaitForSeconds(0);
+                yield return new WaitForSeconds(1);
                 gameManager.EndPhase();
                 break;
             case Phase.VIEW_STARTING_NEXT_ROUND:
                 PrintTextToLog("Starting next round");
-                yield return new WaitForSeconds(0);
+                yield return new WaitForSeconds(1);
                 gameManager.EndPhase();
                 break;
         }  

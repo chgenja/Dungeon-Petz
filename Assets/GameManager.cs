@@ -38,13 +38,13 @@ public class GameManager : MonoBehaviour
         int startingPlayer = Random.Range(0, players.Length);
         players[startingPlayer].isStartingPlayer = true;
         currentPlayer = players[startingPlayer];
-        view.UpdateStartingPlayerMarker();
         view.UpdatePlayerColorBoard(currentPlayer);
 
         //starting round 1, first phase
         round = 1;
         view.UpdateRound();
 
+        view.UpdateStartingPlayerMarker();
 
         PhaseChanged += OnPhaseChanged;
 
