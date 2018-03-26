@@ -19,6 +19,8 @@ public class View: MonoBehaviour {
     public Text logText;
     public GameObject groupingPopup;
     public GameObject endGamePopup;
+    public Text[] impCounts;
+    public Text[] goldCounts;
 
     void Start()
     {
@@ -26,10 +28,26 @@ public class View: MonoBehaviour {
         gameManager.StartingPlayerChanged += UpdateStartingPlayerMarker;
         gameManager.RoundChanged += UpdateRound;
         gameManager.CurrentPlayerChanged += UpdatePlayerColorBoard;
+        
+
 
     }
 
+    public void UpdateImpCounts()
+    {
+        for (int i = 0; i < impCounts.Length; i++)
+        {
+            impCounts[i].text = "x" + gameManager.players[i].impCount.ToString();
+        }
+    }
 
+    public void UpdateGoldCounts()
+    {
+        for (int i = 0; i < goldCounts.Length; i++)
+        {
+            goldCounts[i].text = "x" + gameManager.players[i].gold.ToString();
+        }
+    }
     public void UpdateNames()
     {
         for (int i = 0; i < gameManager.players.Length; i++)

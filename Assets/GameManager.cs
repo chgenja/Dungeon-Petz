@@ -39,6 +39,8 @@ public class GameManager : MonoBehaviour
         players[startingPlayer].isStartingPlayer = true;
         currentPlayer = players[startingPlayer];
         view.UpdatePlayerColorBoard(currentPlayer);
+        view.UpdateImpCounts();
+        view.UpdateGoldCounts();
 
         //starting round 1, first phase
         round = 1;
